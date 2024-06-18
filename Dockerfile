@@ -1,27 +1,22 @@
-# Use a base image with Flutter pre-installed
+# Use an official Flutter image as a parent image
 FROM cirrusci/flutter:stable
 
-# Install Java (assuming the JAR file requires Java)
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk
-
-# Copy your Flutter project into the Docker image
-COPY . /app
+# Set the working directory
 WORKDIR /app
 
-# Add the JAR file to a directory in the Docker image
-COPY path/to/your/library.jar /usr/local/lib/library.jar
+# Copy the entire project directory into the container
+COPY . .
 
-# Set the CLASSPATH environment variable to include the JAR file
-ENV CLASSPATH /usr/local/lib/library.jar
-
-# You can also add commands to build and run your Flutter project
-# Example to build the Flutter app
+# Install dependencies
 RUN flutter pub get
+
+# Build the Flutter application for release
 RUN flutter build apk --release
 
-# Command to run your app (if applicable)
+# Example: If you need to expose a port (for serving a web application, for example)
+EXPOSE 8035
+
+# Command to run the Flutter application
 # CMD ["flutter", "run"]
 
-# Expose the necessary port (if applicable)
-EXPOSE 8080
+# Or if you're building for mobile platforms (Android/iOS), you'd typically use flutter build commands as shown above.
