@@ -1,27 +1,27 @@
-# Use an official Flutter container as the base image
-FROM cirrusci/flutter AS builder
-# Set the working directory inside the container
-WORKDIR /trip_planner
+# Use a base image with Flutter pre-installed
+FROM cirrusci/flutter:stable
 
-# Copy the pubspec files to the container
-COPY /trip_planner/pubspec.yaml .
-COPY /trip_planner/pubspec.lock .
+# Install Java (assuming the JAR file requires Java)
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk
 
-# Install dependencies
+# Copy your Flutter project into the Docker image
+COPY . /app
+WORKDIR /app
+
+# Add the JAR file to a directory in the Docker image
+COPY path/to/your/library.jar /usr/local/lib/library.jar
+
+# Set the CLASSPATH environment variable to include the JAR file
+ENV CLASSPATH /usr/local/lib/library.jar
+
+# You can also add commands to build and run your Flutter project
+# Example to build the Flutter app
 RUN flutter pub get
+RUN flutter build apk --release
 
-# Copy the rest of the app files to the container
-COPY . .
+# Command to run your app (if applicable)
+# CMD ["flutter", "run"]
 
-# Build the Flutter web app
-RUN flutter build web --release
-
-# Use a lightweight HTTP server to serve the built app
-# FROM nginx:alpine
-# COPY --from=builder /uibuilder/build/web /usr/share/nginx/html
+# Expose the necessary port (if applicable)
 EXPOSE 8080
-
-# FROM cirrusci/flutter AS builder
-# EXPOSE 8080
-# ADD target/trip_planner.jar trip_planner.jar
-# ENTRYPOINT [ "flutter", "-jar", "trip_planner.jar"]
