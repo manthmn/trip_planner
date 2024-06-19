@@ -4,10 +4,10 @@ metadata:
   name: trip-planner-deployment
   namespace: default
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: trip-planner
-  replicas: 2
   template:
     metadata:
       labels:
