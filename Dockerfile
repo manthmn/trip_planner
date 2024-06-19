@@ -1,5 +1,29 @@
-# Use an official Flutter image as a parent image
-FROM cirrusci/flutter:stable
+# Use Debian as the base image
+FROM debian:latest AS build-env
+
+# Install Flutter dependencies and CA certificates
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    git \
+    unzip \
+    xz-utils \
+    zip \
+    libglu1-mesa \
+    ca-certificates && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Clone the Flutter repository
+RUN git clone --depth 1 --branch 3.7.3 https://github.com/flutter/flutter.git /usr/local/flutter
+
+# Set Flutter path
+ENV PATH="${PATH}:/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin"
+
+# Verify Flutter installation
+RUN flutter --version
+
+# Run flutter doctor to check for any issues
+RUN flutter doctor -v
 
 # Set the working directory
 WORKDIR /app
@@ -7,16 +31,22 @@ WORKDIR /app
 # Copy the entire project directory into the container
 COPY . .
 
-# Install dependencies
+# Fetch Flutter dependencies
 RUN flutter pub get
 
-# Build the Flutter application for release
-RUN flutter build apk --release
+# Verify Flutter version again
+RUN flutter --version
 
-# Example: If you need to expose a port (for serving a web application, for example)
-EXPOSE 8035
+# Build the Flutter web application
+RUN flutter build web --release --web-renderer html --base-href /
 
-# Command to run the Flutter application
-# CMD ["flutter", "run"]
+# Example: If you need to serve the built web app, you can use a simple server like nginx or any other server
+# Here, we copy the build output to a new nginx container
+# FROM nginx:alpine
+# COPY --from=build-env /app/build/web /usr/share/nginx/html
 
-# Or if you're building for mobile platforms (Android/iOS), you'd typically use flutter build commands as shown above.
+# Expose port 80 to the outside world
+EXPOSE 80
+
+# Command to run the nginx server
+# CMD ["nginx", "-g", "daemon off;"]
