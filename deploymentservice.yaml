@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment # Kubernetes resource kind we are creating
 metadata:
   name: flutter-web-k8s-deployment
+  namespace: default
 spec:
   selector:
     matchLabels:
@@ -28,6 +29,7 @@ apiVersion: v1 # Kubernetes API version
 kind: Service # Kubernetes resource kind we are creating
 metadata: # Metadata of the resource kind we are creating
   name: flutter-web-k8ssvc
+  namespace: default
 spec:
   selector:
     app: flutter-web-k8s
