@@ -16,11 +16,9 @@ spec:
       containers:
         - name: flutter-web-k8s
           image: trip_planner # Image that will be used to containers in the cluster
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
-      imagePullSecrets:
-        - name: regcred
 
 
 ---
