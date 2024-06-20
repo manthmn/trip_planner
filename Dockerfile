@@ -8,7 +8,7 @@ WORKDIR /usr/share/nginx/html
 COPY build/web/ .
 
 # Expose port 80 to serve the Flutter web app
-EXPOSE 80
+EXPOSE 8035
 
 # Start nginx server
 CMD ["nginx", "-g", "daemon off;"]
